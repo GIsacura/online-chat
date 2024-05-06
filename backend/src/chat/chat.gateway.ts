@@ -9,7 +9,7 @@ import { ChatService } from './chat.service';
 import { OnModuleInit } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class ChatGateway implements OnModuleInit {
   constructor(private readonly chatService: ChatService) {}
 
@@ -19,6 +19,8 @@ export class ChatGateway implements OnModuleInit {
   onModuleInit() {
     //Listen new connections
     this.server.on('connection', (socket) => {
+      console.log('Client connected');
+
       const { name } = socket.handshake.auth;
 
       if (!name) {
@@ -33,6 +35,8 @@ export class ChatGateway implements OnModuleInit {
       this.server.emit('on-clients-changed', this.chatService.getClients());
 
       socket.on('disconnect', () => {
+        console.log('Client disconnected');
+
         this.chatService.onClientDisconnected(socket.id);
         this.server.emit('on-clients-changed', this.chatService.getClients());
       });
@@ -46,6 +50,8 @@ export class ChatGateway implements OnModuleInit {
   ) {
     const { name } = client.handshake.auth;
     if (!message) return;
+    console.log({ message, name });
+
     this.server.emit('on-message', {
       userId: client.id,
       name,
