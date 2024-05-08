@@ -22,7 +22,8 @@ export default function Home() {
 			return errors;
 		},
 		onSubmit: (values) => {
-			localStorage.setItem("chat-username", values.name);
+			sessionStorage.setItem("chat-username", values.name);
+			setRecentNames((prev) => [...prev, values.name]);
 			router.push("/chat");
 		},
 	});
@@ -37,7 +38,7 @@ export default function Home() {
 	}, []);
 
 	return (
-		<main className="w-full min-h-screen flex items-center bg-slate-100/90 pt-10">
+		<main className="w-full min-h-screen flex items-center pt-10">
 			<section className="w-[50%] h-full flex flex-col justify-center items-center">
 				{recentNames.length > 0 ? (
 					<div>
