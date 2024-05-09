@@ -24,6 +24,6 @@ html {
 .message.incoming {
   margin: 1rem;
   border-radius: 1.125rem 1.125rem 1.125rem 0;
-  background: #333;
+  background: #666;
   color: white;
 }

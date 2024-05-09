@@ -11,34 +11,20 @@ import DotIcon from "@/components/icons/DotIcon";
 import UserIcon from "@/components/icons/UserIcon";
 import Loader from "@/components/ui/Loader";
 
-let name: string | null = null;
-let socket: Socket | undefined = undefined;
-
-if (name) {
-	socket = io(config.socket.url ?? "", {
-		auth: {
-			name,
-		},
-	});
+export interface Client {
+	id: string;
+	name: string;
 }
 
-const usersConnected = [
-	{
-		name: "Thor",
-	},
-	{
-		name: "Nick Fury",
-	},
-	{
-		name: "Hawkeye",
-	},
-];
+let name: string | null = null;
+let socket: Socket | undefined = undefined;
 
 const Chat = () => {
 	const router = useRouter();
 	const [username, setUsername] = useState<string | null>(null);
 	const [connected, setConnected] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [usersConnected, setUsersConnected] = useState<Client[]>([]);
 	const chatRef = useRef<HTMLDivElement>(null);
 
 	const renderMessage = (payload: any) => {
@@ -51,12 +37,15 @@ const Chat = () => {
 
 			if (userId !== socket.id) {
 				divElement.classList.add("incoming");
+				divElement.innerHTML = `
+					<small>${name}</small>
+					<p>${message}</p>
+				`;
+			} else {
+				divElement.innerHTML = `
+					<p>${message}</p>
+				`;
 			}
-
-			divElement.innerHTML = `
-				<small>${name}</small>
-				<p>${message}</p>
-			`;
 
 			if (chatRef.current) {
 				chatRef.current.appendChild(divElement);
@@ -92,9 +81,17 @@ const Chat = () => {
 			// throw new Error("Username is required");
 		}
 
-		if (name) {
-			setLoading(false);
+		if (!socket) {
+			socket = io(config.socket.url ?? "", {
+				auth: {
+					name,
+				},
+			});
 		}
+
+		setLoading(false);
+
+		console.log("ENTRO");
 
 		socket?.on("connect", () => {
 			console.log("Connected to server");
@@ -104,6 +101,12 @@ const Chat = () => {
 		socket?.on("disconnect", () => {
 			console.log("Disconnected from server");
 			setConnected(false);
+		});
+
+		socket.on("on-clients-changed", (clients: Client[]) => {
+			console.log({ clients });
+
+			setUsersConnected([...clients]);
 		});
 
 		socket?.on("on-message", renderMessage);
@@ -142,13 +145,13 @@ const Chat = () => {
 						<UserIcon className="md:w-12 md:h-12 bg-slate-400/50 rounded-full p-2" />
 						{connected ? (
 							<span className="flex">
+								{username}
 								<DotIcon color="#00cd00" />
-								Online
 							</span>
 						) : (
 							<span className="flex">
+								{username}
 								<DotIcon color="#e60000" />
-								Offline
 							</span>
 						)}
 					</div>
@@ -162,10 +165,10 @@ const Chat = () => {
 						>
 							<input
 								placeholder="Insert a message..."
+								name="message"
 								id="message"
 								value={formik.values.message}
 								onChange={formik.handleChange}
-								type="text"
 								autoComplete="off"
 								className="w-full outline-none bg-transparent h-full"
 							/>
