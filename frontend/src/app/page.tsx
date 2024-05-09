@@ -3,8 +3,6 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
-// localStorage.setItem("recent-names", JSON.stringify(["John", "Doe", "Jane"]));
-
 export default function Home() {
 	const router = useRouter();
 	const [recentNames, setRecentNames] = useState<string[]>([]);
@@ -76,7 +74,7 @@ export default function Home() {
 							type="text"
 							className={`border ${
 								formik.errors.name ? "border-red-500" : "border-black"
-							} outline-none w-full max-w-[500px] p-2 rounded-lg mx-auto`}
+							} text-black outline-none w-full max-w-[500px] p-2 rounded-lg mx-auto`}
 						/>
 						{formik.errors.name && (
 							<p className="text-red-500 w-full max-w-[500px] mx-auto">

@@ -2,21 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 import { config } from "../../config";
 import { useFormik } from "formik";
 import SendIcon from "@/components/icons/SendIcon";
 import MessagesIcon from "@/components/icons/MessagesIcon";
 import DotIcon from "@/components/icons/DotIcon";
 import UserIcon from "@/components/icons/UserIcon";
+import Loader from "@/components/ui/Loader";
 
-const name = sessionStorage.getItem("chat-username");
+let name: string | null = null;
+let socket: Socket | undefined = undefined;
 
-const socket = io(config.socket.url ?? "", {
-	auth: {
-		name,
-	},
-});
+if (name) {
+	socket = io(config.socket.url ?? "", {
+		auth: {
+			name,
+		},
+	});
+}
 
 const usersConnected = [
 	{
@@ -34,29 +38,32 @@ const Chat = () => {
 	const router = useRouter();
 	const [username, setUsername] = useState<string | null>(null);
 	const [connected, setConnected] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const chatRef = useRef<HTMLDivElement>(null);
 
 	const renderMessage = (payload: any) => {
 		const { userId, message, name } = payload;
-		console.log({ userId, message, name, socketId: socket.id });
+		if (socket) {
+			console.log({ userId, message, name, socketId: socket.id });
 
-		const divElement = document.createElement("div");
-		divElement.classList.add("message");
+			const divElement = document.createElement("div");
+			divElement.classList.add("message");
 
-		if (userId !== socket.id) {
-			divElement.classList.add("incoming");
-		}
+			if (userId !== socket.id) {
+				divElement.classList.add("incoming");
+			}
 
-		divElement.innerHTML = `
-		  <small>${name}</small>
-		  <p>${message}</p>
-		`;
+			divElement.innerHTML = `
+				<small>${name}</small>
+				<p>${message}</p>
+			`;
 
-		if (chatRef.current) {
-			chatRef.current.appendChild(divElement);
+			if (chatRef.current) {
+				chatRef.current.appendChild(divElement);
 
-			//Scroll to the bottom of the chat
-			chatRef.current.scrollTop = chatRef.current?.scrollHeight;
+				//Scroll to the bottom of the chat
+				chatRef.current.scrollTop = chatRef.current?.scrollHeight;
+			}
 		}
 	};
 
@@ -72,12 +79,12 @@ const Chat = () => {
 			return errors;
 		},
 		onSubmit: (values) => {
-			socket.emit("send-message", values.message);
+			socket?.emit("send-message", values.message);
 		},
 	});
 
 	useEffect(() => {
-		const name = sessionStorage.getItem("chat-username");
+		name = sessionStorage.getItem("chat-username");
 		setUsername(name);
 		if (!name) {
 			router.replace("/");
@@ -85,20 +92,28 @@ const Chat = () => {
 			// throw new Error("Username is required");
 		}
 
-		socket.on("connect", () => {
+		if (name) {
+			setLoading(false);
+		}
+
+		socket?.on("connect", () => {
 			console.log("Connected to server");
 			setConnected(true);
 		});
 
-		socket.on("disconnect", () => {
+		socket?.on("disconnect", () => {
 			console.log("Disconnected from server");
 			setConnected(false);
 		});
 
-		socket.on("on-message", renderMessage);
+		socket?.on("on-message", renderMessage);
 	}, []);
 
-	return (
+	return loading ? (
+		<main className="w-full h-screen flex justify-center items-center">
+			<Loader />
+		</main>
+	) : (
 		<main className="w-full h-screen">
 			<div className="xs:block md:flex h-full">
 				{/* Connected users */}
