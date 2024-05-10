@@ -1,7 +1,7 @@
 "use client";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
 	const router = useRouter();
@@ -22,26 +22,34 @@ export default function Home() {
 		onSubmit: (values) => {
 			sessionStorage.setItem("chat-username", values.name);
 			setRecentNames((prev) => [...prev, values.name]);
-			localStorage.setItem("recent-names", JSON.stringify(recentNames));
+
 			router.push("/chat");
 		},
 	});
 
 	useEffect(() => {
 		(async () => {
-			const names = await JSON.parse(
-				localStorage.getItem("recent-names") || "[]"
-			);
-			setRecentNames(names);
+			const info = localStorage.getItem("recent-names");
+
+			if (info) {
+				const names = await JSON.parse(info);
+				setRecentNames(names);
+			}
 		})();
 	}, []);
 
+	useEffect(() => {
+		localStorage.setItem("recent-names", JSON.stringify(recentNames));
+	}, [recentNames]);
+
 	return (
-		<main className="w-full min-h-screen flex items-center pt-10">
-			<section className="w-[50%] h-full flex flex-col justify-center items-center">
+		<main className="w-full max-w-7xl min-h-screen flex flex-col-reverse justify-center lg:flex-row items-center pt-10 mx-auto">
+			<section className="lg:w-[40%] h-full flex flex-col justify-center items-center">
 				{recentNames.length > 0 ? (
 					<div>
-						<h2 className="md:text-[32px]">Your recent selected names:</h2>
+						<h2 className="text-xl lg:text-[32px]">
+							Your recent selected names:
+						</h2>
 						<ul className="list-disc ml-10">
 							{recentNames.map((name: string) => (
 								<li key={name} className="text-[20px]">
@@ -52,10 +60,10 @@ export default function Home() {
 					</div>
 				) : (
 					<div className="mt-10">
-						<h2 className="md:text-[32px]">Examples names:</h2>
-						<ul className="list-disc ml-10">
+						<h2 className="text-xl lg:text-[32px]">Examples names:</h2>
+						<ul className="list-disc ml-5 lg:ml-10 mt-3">
 							{["John", "Doe", "Jane"].map((name: string) => (
-								<li key={name} className="text-[20px]">
+								<li key={name} className="text-[18px] lg:text-[20px]">
 									{name}
 								</li>
 							))}
@@ -63,10 +71,15 @@ export default function Home() {
 					</div>
 				)}
 			</section>
-			<section className="w-[50%]">
-				<h1 className="text-center md:text-6xl">Online-chat</h1>
+			<section className="w-[90%] lg:w-[60%]">
+				<h1 className="text-center text-4xl md:text-5xl lg:text-6xl bg-clip-text text-transparent bg-title-gradient">
+					Online-chat
+				</h1>
 				<section className="h-full w-full flex flex-col items-center justify-center mt-10">
-					<form onSubmit={formik.handleSubmit} className="w-full flex flex-col">
+					<form
+						onSubmit={formik.handleSubmit}
+						className="w-full lg:w-[90%] flex flex-col"
+					>
 						<input
 							placeholder="Insert a name to join the chat..."
 							id="name"

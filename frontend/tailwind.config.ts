@@ -37,6 +37,9 @@ const config = {
 				sans: ["var(--font-sans)", ...fontFamily.sans],
 			},
 			scrollbar: ["dark"],
+			backgroundImage: (theme) => ({
+				"title-gradient": "linear-gradient(-45deg, #06b6d4 0%, #82ddf0 100%); ",
+			}),
 		},
 	},
 	plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],

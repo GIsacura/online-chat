@@ -10,6 +10,8 @@ import MessagesIcon from "@/components/icons/MessagesIcon";
 import DotIcon from "@/components/icons/DotIcon";
 import UserIcon from "@/components/icons/UserIcon";
 import Loader from "@/components/ui/Loader";
+import MenuIcon from "@/components/icons/MenuIcon";
+import MenuDrawer from "@/components/ui/MenuDrawer";
 
 export interface Client {
 	id: string;
@@ -77,7 +79,6 @@ const Chat = () => {
 		if (!name) {
 			router.replace("/");
 			return;
-			// throw new Error("Username is required");
 		}
 
 		if (!socket) {
@@ -113,7 +114,7 @@ const Chat = () => {
 		<main className="w-full h-screen">
 			<div className="xs:block md:flex h-full">
 				{/* Connected users */}
-				<section className=" h-full md:w-full md:max-w-[300px] border-r-[1px] border-black">
+				<section className=" h-full md:w-full md:max-w-[300px] border-r-[1px] border-black hidden lg:block">
 					<section className="h-20 p-6 gap-x-2 flex items-center">
 						<MessagesIcon className="md:w-12 md:h-12 bg-slate-700 rounded-full p-2" />
 						<h2 className="text-[20px] min-w-max">Live chat</h2>
@@ -135,7 +136,10 @@ const Chat = () => {
 				{/* Chat */}
 				<section className="w-full h-full grid grid-rows-[80px_1fr_80px]">
 					<div className="h-full max-h-20 p-3 flex items-center gap-x-2 border-b border-black ">
-						<UserIcon className="md:w-12 md:h-12 bg-slate-400/50 rounded-full p-2" />
+						<div className="lg:hidden">
+							<MenuDrawer usersConnected={usersConnected} />
+						</div>
+						<UserIcon className="size-12 bg-slate-400/50 rounded-full p-2" />
 						{connected ? (
 							<span className="flex">
 								{username}
@@ -149,7 +153,7 @@ const Chat = () => {
 						)}
 					</div>
 					<div
-						className="w-full h-full overflow-y-scroll scrollbar-none"
+						className="w-full max-w-5xl h-full overflow-y-scroll scrollbar-none mx-auto"
 						ref={chatRef}
 					></div>
 					<form onSubmit={formik.handleSubmit} className="h-full">
