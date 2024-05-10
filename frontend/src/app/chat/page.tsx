@@ -27,11 +27,25 @@ const Chat = () => {
 	const [usersConnected, setUsersConnected] = useState<Client[]>([]);
 	const chatRef = useRef<HTMLDivElement>(null);
 
+	const formik = useFormik({
+		initialValues: {
+			message: "",
+		},
+		validate: (values) => {
+			const errors: Record<string, string> = {};
+			if (!values.message) {
+				errors.message = "Message is required";
+			}
+			return errors;
+		},
+		onSubmit: (values) => {
+			socket?.emit("send-message", values.message);
+		},
+	});
+
 	const renderMessage = (payload: any) => {
 		const { userId, message, name } = payload;
 		if (socket) {
-			console.log({ userId, message, name, socketId: socket.id });
-
 			const divElement = document.createElement("div");
 			divElement.classList.add("message");
 
@@ -53,24 +67,9 @@ const Chat = () => {
 				//Scroll to the bottom of the chat
 				chatRef.current.scrollTop = chatRef.current?.scrollHeight;
 			}
+			formik.resetForm();
 		}
 	};
-
-	const formik = useFormik({
-		initialValues: {
-			message: "",
-		},
-		validate: (values) => {
-			const errors: Record<string, string> = {};
-			if (!values.message) {
-				errors.message = "Message is required";
-			}
-			return errors;
-		},
-		onSubmit: (values) => {
-			socket?.emit("send-message", values.message);
-		},
-	});
 
 	useEffect(() => {
 		name = sessionStorage.getItem("chat-username");
@@ -91,21 +90,15 @@ const Chat = () => {
 
 		setLoading(false);
 
-		console.log("ENTRO");
-
 		socket?.on("connect", () => {
-			console.log("Connected to server");
 			setConnected(true);
 		});
 
 		socket?.on("disconnect", () => {
-			console.log("Disconnected from server");
 			setConnected(false);
 		});
 
 		socket.on("on-clients-changed", (clients: Client[]) => {
-			console.log({ clients });
-
 			setUsersConnected([...clients]);
 		});
 

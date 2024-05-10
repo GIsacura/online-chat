@@ -22,6 +22,7 @@ export default function Home() {
 		onSubmit: (values) => {
 			sessionStorage.setItem("chat-username", values.name);
 			setRecentNames((prev) => [...prev, values.name]);
+			localStorage.setItem("recent-names", JSON.stringify(recentNames));
 			router.push("/chat");
 		},
 	});
