@@ -9,13 +9,11 @@ const MenuDrawer = ({ usersConnected }: { usersConnected: Client[] }) => {
 	return (
 		<Drawer>
 			<DrawerTrigger asChild>
-				<MenuIcon />
+				<button>
+					<MenuIcon />
+				</button>
 			</DrawerTrigger>
-			<DrawerContent>
-				<section className="h-20 p-6 gap-x-2 flex items-center">
-					<MessagesIcon className="md:w-12 md:h-12 bg-slate-700 rounded-full p-2" />
-					<h2 className="text-[20px] min-w-max">Live chat</h2>
-				</section>
+			<DrawerContent className="bg-[#333] scroll-y-auto h-1/2">
 				<section className="p-4">
 					<p>Users connected ({usersConnected.length})</p>
 

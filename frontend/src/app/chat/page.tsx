@@ -158,7 +158,7 @@ const Chat = () => {
 					></div>
 					<form onSubmit={formik.handleSubmit} className="h-full">
 						<div
-							className={`border border-l-0 border-b-0 flex gap-x-2 border-black outline-none w-full h-full p-2`}
+							className={`border border-l-0 border-b-0 border-r-0 flex gap-x-2 border-black outline-none w-full h-full p-2`}
 						>
 							<input
 								placeholder="Insert a message..."

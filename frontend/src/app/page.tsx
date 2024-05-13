@@ -39,7 +39,9 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		localStorage.setItem("recent-names", JSON.stringify(recentNames));
+		if (recentNames.length > 0) {
+			localStorage.setItem("recent-names", JSON.stringify(recentNames));
+		}
 	}, [recentNames]);
 
 	return (
