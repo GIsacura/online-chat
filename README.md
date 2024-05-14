@@ -1,8 +1,6 @@
-
 # Online Chat
 
 Real-time online chat, in which multiple users can connect and send messages
-
 
 ## Installation
 
@@ -22,8 +20,11 @@ Backend (port 3001)
   pnpm install
   pnpm run start:prod
 ```
-    
+
+## Usage/Examples
+
+Open the app in two diferents tabs or browsers and start chatting
+
 ## Tech Stack
 
 Next, Nest, Typescript, Socket.io
-
