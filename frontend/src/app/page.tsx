@@ -21,7 +21,12 @@ export default function Home() {
 		},
 		onSubmit: (values) => {
 			sessionStorage.setItem("chat-username", values.name);
-			setRecentNames((prev) => [...prev, values.name]);
+			setRecentNames((prev) => {
+				if (!prev.includes(values.name)) {
+					return [...prev, values.name];
+				}
+				return prev;
+			});
 
 			router.push("/chat");
 		},
@@ -48,16 +53,19 @@ export default function Home() {
 		<main className="w-full max-w-7xl min-h-screen flex flex-col-reverse justify-center lg:flex-row items-center pt-10 mx-auto">
 			<section className="lg:w-[40%] h-full flex flex-col justify-center items-center">
 				{recentNames.length > 0 ? (
-					<div>
+					<div className="mt-10 ml-14 lg:ml-auto w-[80%]">
 						<h2 className="text-xl lg:text-[32px]">
 							Your recent selected names:
 						</h2>
-						<ul className="list-disc ml-10">
-							{recentNames.map((name: string) => (
-								<li key={name} className="text-[20px]">
-									{name}
-								</li>
-							))}
+						<ul className="list-disc ml-5 lg:ml-10 mt-3">
+							{recentNames
+								.slice(-4)
+								.reverse()
+								.map((name: string) => (
+									<li key={name} className="text-[18px] lg:text-[20px]">
+										{name}
+									</li>
+								))}
 						</ul>
 					</div>
 				) : (

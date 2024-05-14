@@ -9,7 +9,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-	title: "Online chat - Log in",
+	title: "Online chat app",
 	description: "Online chat application for everyone",
 };
 
